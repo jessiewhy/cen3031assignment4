@@ -32,7 +32,7 @@ module.exports.init = function() {
   /**TODO 
   Go to homepage for all routes not specified */ 
   app.all('/*', function(req, res, next){
-    res.redirect('../index.html');
+    res.sendfile(path.resolve('client/index.html'));
   })
 
   return app;

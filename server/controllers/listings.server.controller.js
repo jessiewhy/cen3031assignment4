@@ -43,22 +43,19 @@ exports.update = function(req, res) {
   /** TODO **/
   /* Replace the article's properties with the new properties found in req.body */
   /* Save the article */
-  listing.name = req.body.name;
-  listing.code = req.body.code;
-  listing.address = req.body.address;
-  //listing.coordinates = {latitude = req.body.latitude, longitude = req.body.longitude}
+  listing.code=req.body.code;
+  listing.name=req.body.name;
+  listing.address=req.body.address;
 
-  //save
-  Listing.findOneAndUpdate({"name": name},
-  {$sest: {"address": listing.address, "name": listing.name, "code": listing.code}},
-  {new: true}, function(err, doc){
+  listing.save(function(err) {
     if(err){
-      console.log("no")
+      console.log(err);
       res.status(400).send(err);
     }
-    res.json(article)
-  }
-)
+    else{
+      res.json(listing);
+    }
+  })
 };
 
 /* Delete a listing */
@@ -67,28 +64,27 @@ exports.delete = function(req, res) {
 
   /** TODO **/
   /* Remove the article */
-
-  Listing.find({code: listing.code},function(err,docs) {
+  listing.remove(function(err){
     if(err){
       console.log(err);
       res.status(400).send(err);
+    }else{
+      res.end();
     }
-    res.json(article);
-  }).remove();
+  })
 };
 
 /* Retreive all the directory listings, sorted alphabetically by listing code */
 exports.list = function(req, res) {
   /** TODO **/
   /* Your code here */
-  listing.find().sort({code: 1}).exec(function(err,docs){
-    if(err){
-      res.status(400).send(err);
-    }
-    else{
-      res.json(docs);
-    }
-  });
+ Listing.find().sort('code').exec(function(err, listings){
+   if(err){
+     res.status(404).send(err);
+   }else{
+     res.json(listings);
+   }
+ })
 };
 
 /* 
@@ -98,8 +94,8 @@ exports.list = function(req, res) {
         bind it to the request object as the property 'listing', 
         then finally call next
  */
-exports.listingByID = function(req, res, next, id) {
-  Listing.findById(id).exec(function(err, listing) {
+exports.listingByID = function(req, res, next, listingId) {
+  Listing.findById(listingId).exec(function(err, listing) {
     if(err) {
       res.status(400).send(err);
     } else {
